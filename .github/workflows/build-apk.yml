@@ -1,0 +1,48 @@
+name: Compilar APK
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Pruebas de los motores
+        run: node --test tests/engine.test.js tests/content.test.js
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.11.1' }
+      - name: Preparar interfaz y modelo de voz
+        run: ./scripts/prepare-assets.sh
+      - name: Preparar firma
+        env:
+          KS: ${{ secrets.EP_KEYSTORE_B64 }}
+        run: |
+          if [ -n "$KS" ]; then
+            echo "$KS" | base64 -d > "$RUNNER_TEMP/ep.jks"
+            echo "EP_KEYSTORE_PATH=$RUNNER_TEMP/ep.jks" >> "$GITHUB_ENV"
+          else
+            echo "::warning::Sin clave fija: este APK no podrá instalarse encima de otro firmado distinto."
+          fi
+      - name: Compilar
+        env:
+          EP_KEYSTORE_PASSWORD: ${{ secrets.EP_KEYSTORE_PASSWORD }}
+          EP_KEY_ALIAS: ${{ secrets.EP_KEY_ALIAS }}
+          EP_KEY_PASSWORD: ${{ secrets.EP_KEY_PASSWORD }}
+        run: gradle -p android assembleRelease --no-daemon --stacktrace
+      - name: Publicar APK
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APK=$(ls android/app/build/outputs/apk/release/*.apk | head -1)
+          cp "$APK" "eloquent-pro-1.0.${GITHUB_RUN_NUMBER}.apk"
+          ls -lh eloquent-pro-*.apk
+          gh release create "v1.0.${GITHUB_RUN_NUMBER}" eloquent-pro-*.apk --title "ELOQUENT PRO 1.0.${GITHUB_RUN_NUMBER}" --notes "APK para Android ARM64. Powered by Korevia."
