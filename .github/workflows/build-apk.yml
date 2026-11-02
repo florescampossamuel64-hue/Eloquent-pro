@@ -22,21 +22,7 @@ jobs:
         with: { gradle-version: '8.11.1' }
       - name: Preparar interfaz y modelo de voz
         run: ./scripts/prepare-assets.sh
-      - name: Preparar firma
-        env:
-          KS: ${{ secrets.EP_KEYSTORE_B64 }}
-        run: |
-          if [ -n "$KS" ]; then
-            echo "$KS" | base64 -d > "$RUNNER_TEMP/ep.jks"
-            echo "EP_KEYSTORE_PATH=$RUNNER_TEMP/ep.jks" >> "$GITHUB_ENV"
-          else
-            echo "::warning::Sin clave fija: este APK no podrá instalarse encima de otro firmado distinto."
-          fi
       - name: Compilar
-        env:
-          EP_KEYSTORE_PASSWORD: ${{ secrets.EP_KEYSTORE_PASSWORD }}
-          EP_KEY_ALIAS: ${{ secrets.EP_KEY_ALIAS }}
-          EP_KEY_PASSWORD: ${{ secrets.EP_KEY_PASSWORD }}
         run: gradle -p android assembleRelease --no-daemon --stacktrace
       - name: Publicar APK
         env:

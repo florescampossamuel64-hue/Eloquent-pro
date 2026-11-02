@@ -13,7 +13,7 @@ Powered by Korevia.
 ## Compilar
 
 Cada push a `main` compila el APK. También se puede lanzar desde la pestaña Actions.
-Antes del primer build, crea la clave fija: `./scripts/setup-signing.sh usuario/eloquent-pro`.
+La clave de firma está en el repositorio para que las versiones se instalen una encima de otra. Si el repositorio es público, cualquiera puede firmar con ella: instala el APK solo desde este repositorio. Para distribuir la app a otras personas, cambia la clave y mantenla fuera del repositorio.
 
 ## Probar
 

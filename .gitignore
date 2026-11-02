@@ -2,7 +2,6 @@ android/app/src/main/assets/
 android/.gradle/
 android/build/
 android/app/build/
-*.jks
 *.keystore
 secrets/
 node_modules/

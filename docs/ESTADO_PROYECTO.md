@@ -8,7 +8,7 @@ Proyecto Android, Vosk, TextToSpeech, referencia sintetizada, recordatorios, res
 
 ## Siguiente paso exacto
 1. Conectar GitHub y crear el repositorio.
-2. Ejecutar `scripts/setup-signing.sh`, subir el código y corregir lo que falle en la primera compilación.
+2. Revisar la primera compilación y corregir lo que falle.
 3. Instalar el APK y correr el Banco de Pruebas con la lista de 5 minutos.
 4. Calibrar umbrales con esos datos.
 
