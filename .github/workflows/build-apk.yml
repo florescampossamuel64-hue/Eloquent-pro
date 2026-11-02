@@ -17,7 +17,6 @@ jobs:
         with: { node-version: '22' }
       - name: Pruebas de los motores
         run: node --test tests/engine.test.js tests/content.test.js
-      - uses: android-actions/setup-android@v3
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.11.1' }
       - name: Preparar interfaz y modelo de voz
